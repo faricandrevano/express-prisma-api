@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model kelas {
+  id_kelas        Int          @id @default(autoincrement())
+  tgl             DateTime     @default(now())
+  kelas           String?
+  jurusan         String?
+  count_kesehatan String?
+  hemoglobin      hemoglobin[]
+  kesehatan       kesehatan[]
+  user            user[]
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+}
+
+model kesehatan {
+  id_kesehatan Int      @id @default(autoincrement())
+  user_id      Int
+  kelas_id     Int
+  tgl          DateTime @default(now())
+  bb           String?
+  tb           String?
+  sistol       String?
+  diastol      String?
+  status_darah String?
+  imt          String?
+  status       String?
+  pesan_imt    String?
+  pesan_tkd    String?
+  kelas        kelas    @relation(fields: [kelas_id], references: [id_kelas], onDelete: Cascade, onUpdate: Cascade)
+  user         user     @relation(fields: [user_id], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+}
+
+model hemoglobin {
+  id_hemoglobin Int      @id @default(autoincrement())
+  user_id       Int
+  kelas_id      Int
+  kelas         kelas    @relation(fields: [kelas_id], references: [id_kelas], onDelete: Cascade, onUpdate: Cascade)
+  user          user     @relation(fields: [user_id], references: [id_user], onDelete: Cascade, onUpdate: Cascade)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+}
+
+model user {
+  id_user    Int          @id @default(autoincrement())
+  kelas      kelas        @relation(fields: [kelas_id], references: [id_kelas], onDelete: Cascade, onUpdate: Cascade)
+  kelas_id   Int
+  tgl        DateTime     @default(now())
+  nis        String?
+  username   String?
+  password   String?
+  nama       String?
+  level      user_level   @default(SISWA)
+  jk         user_jk?
+  hemoglobin hemoglobin[]
+  kesehatan  kesehatan[]
+  created_at DateTime     @default(now())
+  updated_at DateTime     @updatedAt
+}
+
+model blackListToken {
+  id         Int      @id @default(autoincrement())
+  token      String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+enum user_level {
+  PMR
+  ADMIN
+  OLAHRAGA
+  SISWA
+}
+
+enum user_jk {
+  L
+  P
+}
